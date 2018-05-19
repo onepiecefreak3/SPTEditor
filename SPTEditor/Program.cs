@@ -71,11 +71,9 @@ namespace SPTEditor
 
         private static byte[] SerializeSPT(string file)
         {
-            string result = "";
-
             var ms = new MemoryStream();
             using (var bw = new BinaryWriterY(ms, true))
-            using (var reader = new SPT.TXTReader(file))
+            using (var reader = new SPT.TXTReader(File.ReadAllText(file)))
             {
                 var header = new SPT.Structs.SPTHeader();
                 List<byte[]> partitions = new List<byte[]>();
@@ -96,6 +94,7 @@ namespace SPTEditor
                                 foreach (var arg in reader.GetCurrentCodeInfo().arguments)
                                     intBw.Write((ushort)(arg ^ header.XORKey));
                         }
+                        intBw.Write((short)0);
                     }
 
                     partitions.Add(intMs.ToArray());
@@ -109,11 +108,11 @@ namespace SPTEditor
                 for (int i = 0; i < partitions.Count; i++)
                 {
                     bw.Write((short)(dataOffset / 2));
-                    bw.Write((short)(partitions[i].Length / 2));
+                    bw.Write((short)(partitions[i].Length / 2 - 1));
                     bw.Write((short)flags[i].Item1);
                     bw.Write((short)flags[i].Item2);
 
-                    dataOffset += partitions[i].Length / 2;
+                    dataOffset += partitions[i].Length;
                 }
                 foreach (var part in partitions)
                     bw.Write(part);
