@@ -141,12 +141,9 @@ namespace SPTEditor.SPT
 
         private CodeInfo _codeInfo;
 
-        public TXTReader(string file)
+        public TXTReader(string content)
         {
-            if (!File.Exists(file))
-                throw new Exception($"File {file} doesn't exist.");
-
-            _reader = new StringReader(File.ReadAllText(file));
+            _reader = new StringReader(content);
         }
 
         public bool ReadNextPartition()
